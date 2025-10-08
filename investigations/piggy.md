@@ -45,11 +45,13 @@ Giữa 2 địa chỉ IP có lần lượt số M data trao đổi là 563 và 5
 Mở file PCAPTwo.pcap với wireshark. Tiến hành phân tích nhanh lưu lượng bằng các thống kê gói tin.
 
 Chọn Statistics → Conversations → TCP 
+
 <img width="975" height="224" alt="image" src="https://github.com/user-attachments/assets/79c0accf-0581-431c-b998-cdd51d0176a1" />
 
 Kiểm tra toàn bộ các IP, sử dụng công cụ [virustotal](https://www.virustotal.com/gui/home/upload) để check các địa chỉ IP với các mẫu dữ liệu có sẵn trong DB về các hành vi độc hại.
 
 Nhận thấy cả 5 địa chỉ IP đều có nhãn độc hại:
+
 <img width="975" height="396" alt="image" src="https://github.com/user-attachments/assets/2e291779-b7f0-4481-a0db-342a0b2e2a81" />
 <img width="975" height="324" alt="image" src="https://github.com/user-attachments/assets/e3314c8c-5b83-40a2-b0bc-ed8a15144d35" />
 <img width="975" height="359" alt="image" src="https://github.com/user-attachments/assets/7d8d02c4-a21a-4e63-b6c3-5b29bb57b0f7" />
@@ -75,8 +77,8 @@ Nói ngắn gọn: Mỗi IP công cộng đều thuộc về một AS (Autonomou
 Ví dụ: 
 | IP Address | ASN | ISP |
 |------------|-----|-----|
-| 8.8.8.8	| AS15169 | Tên tổ chức sở hữu (ISP/mạng): Google LLC |
-| 1.1.1.1	| AS13335 | Tên tổ chức sở hữu (ISP/mạng): Cloudflare, Inc |
+| 8.8.8.8	| AS15169 | Google LLC |
+| 1.1.1.1	| AS13335 | Cloudflare, Inc |
 
 Trong wireshark, mở Conversations:
 
@@ -112,15 +114,62 @@ Sử dụng công cụ tra cứu thông tin địa chỉ IP [AbuseIPDB](https://
 
 ## Q5: (PCAP Three) Perform OSINT checks. What malware category have these IPs been attributed to historically? (Format: MalwareType)
 
+Sử dụng [virustotal](https://www.virustotal.com/gui/home/upload) để tìm kiếm thông tin về các địa chỉ IP. Theo AV AlphaSOC, địa chỉ IP này là của một loại Miner.
+
+<img width="975" height="374" alt="image" src="https://github.com/user-attachments/assets/ac8e1df8-ce2e-4691-b435-3c967ef41517" />
+
+***=> Miner***
+
 
 ## Q6: (PCAP Three) What ATT&CK technique is most closely related to this activity? (Format: TXXXX) 
+
+Truy cập trang chủ [MITRE ATT&CK](https://attack.mitre.org/) để tìm kiếm mã kĩ thuật cho hành vi này, nó là một dạng Resource Hijacking như sau:
+
+<img width="975" height="520" alt="image" src="https://github.com/user-attachments/assets/9e9ae56f-d089-4c4a-abdd-6abb54248ae1" />
+
+***=> T1496***
 
 
 ## Q7: (PCAP Four) Go to View > Time Display Format > Seconds Since Beginning of Capture. How long into the capture was the first TXT record query made? (Use the default time, which is seconds since the packet capture started) (Format: X.xxxxxx) 
 
+Mở file PCAPFour.pcap trong wireshark, cài đặt thời gian bắt các gói tin theo giây (second) mốc tính từ lúc bắt đầu capture.
+
+<img width="975" height="351" alt="image" src="https://github.com/user-attachments/assets/135b9e32-425f-438f-a9e5-2f3699f6a9ce" />
+
+Thông thường, DNS dùng để tra cứu tên miền sang địa chỉ IP (bản ghi A hoặc AAAA). Nhưng ở đây, bản ghi TXT lại được truy vấn và phản hồi liên tục, chứa chuỗi ngẫu nhiên như mlckdhokhvhtcmevvcgb....
+
+Đó không phải hành vi DNS bình thường → rất có thể là DNS tunneling / data exfiltration — kỹ thuật giấu dữ liệu bên trong các bản ghi DNS TXT để truyền dữ liệu ra ngoài (bỏ qua tường lửa hoặc IDS).
+
+Sử dụng filter **dns**:
+
+<img width="975" height="414" alt="image" src="https://github.com/user-attachments/assets/c4390ed2-c6f8-4bb1-b538-daf8b6ca055c" />
+
+Hoặc sử dụng filter **dns.qry.type == 16** để filter DNS TXT queries (TXT = type 16):
+
+<img width="975" height="408" alt="image" src="https://github.com/user-attachments/assets/637fa5b0-4f7e-43b7-911a-60d7692c3510" />
+
+Kết quả cho truy vấn đầu tiên có bản ghi TXT là 8.527712s.
+
+***=> 8.527712***
+
 
 ## Q8: (PCAP Four) Go to View > Time Display Format > UTC Date and Time of Day. What is the date and timestamp? (Format: YYYY-MM-DD HH:MM:SS)
+
+Mở file PCAPFour.pcap trong wireshark, cài đặt thời gian bắt các gói tin theo định dạng Ngày giờ UTC.
+
+<img width="975" height="351" alt="image" src="https://github.com/user-attachments/assets/3d088f32-e5a8-4207-a946-30107ca5912a" />
+
+Xem lại thời gian của các gói tin có truy vấn bản ghi TXT đó:
+
+<img width="975" height="410" alt="image" src="https://github.com/user-attachments/assets/b4ce5444-a030-4021-8a95-c3d70a78644a" />
+
+***=> 2024-05-24 10:08:50***
 
 
 ## Q9: (PCAP Four) What is the ATT&CK subtechnique relating to this activity? (Format: TXXXX.xxx)
 
+Truy cập trang chủ [MITRE ATT&CK](https://attack.mitre.org/) để tìm kiếm mã kĩ thuật cho hành vi này, nó là một dạng Application Layer Protocol: DNS như sau:
+
+<img width="975" height="486" alt="image" src="https://github.com/user-attachments/assets/dce76117-d1c3-4131-b6a7-e44cb698df78" />
+
+***=> T1071.004***
