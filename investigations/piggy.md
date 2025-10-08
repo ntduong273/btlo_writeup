@@ -60,8 +60,8 @@ Nhận thấy cả 5 địa chỉ IP đều có nhãn độc hại:
 
 Ngoài ra, địa chỉ 195.161.41.93 có liên quan đến báo cáo “malicious activity” trên ANY.RUN. Trong báo cáo của [Joesecurity](https://www.joesecurity.org/reports/report-DE1CE3514F777178D672EE79AC398A74.html), có đoạn chứa <srv>195.161.41.93:443</srv> trong một mẫu phần mềm độc hại mà họ gọi là Trickbot e-Banking trojan
 
-<img width="975" height="70" alt="image" src="https://github.com/user-attachments/assets/69a822ef-7de7-404c-932e-a2d8f79d8a0d" />
 <img width="975" height="139" alt="image" src="https://github.com/user-attachments/assets/e9912a34-ee00-4d79-bbdf-33eff6537fe5" />
+<img width="975" height="70" alt="image" src="https://github.com/user-attachments/assets/69a822ef-7de7-404c-932e-a2d8f79d8a0d" />
 
 ***=> Trickbot***
 
